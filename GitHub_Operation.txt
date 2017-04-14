@@ -1,0 +1,125 @@
+Company:聚联科技
+Location:Shanghai China
+Author:Kingsley Tong
+Create Time:2017-04-14 14:18:21
+Copyright: ©️2017 聚联科技 All rights reserved
+
+
+//创建SSH key 以及git的一些命令操作
+
+cd ~/.ssh
+
+ssh-keygen -t rsa -C "juliankeji_1201@163.com" //获取公秘钥
+
+ssh -T git@github.com //测试连接github
+
+git clone git@github.com:juliankeji/HJHProject.git	//从远程克隆仓库
+
+git pull == git fetch + git merge //更新合并
+
+git add README//添加README到暂存区
+
+git add . //添加所有到暂存区
+
+git commit -m”commit” //提交到本	地仓库
+
+git push -u origin master //第一次提交
+
+git push origin master //提交远程主分支
+
+git push //提交远程
+
+git stash //保存工作现场
+
+git stash list //查看stash清单
+
+git stash pop //恢复工作现场
+
+git checkout -b another //创建并切换到 another分支
+
+git checkout master //切换到master分支
+
+git merge another //合并another分支
+
+git log	//查询记录
+
+git reflog //查询记录
+
+git reset —-hard HEAD~num //版本回退
+
+git reset --hard 1e3d4ee //版本前进
+
+
+
+
+//如何一台电脑对应多个GitHub账号下的Repos
+
+创建了一对SSHkey后 重新创建会提示 在新创建时 输入新的file name就可以不被覆盖
+例如 已经存在的默认SSHKey是id_rsa.pub 和 id_rsa 则新创建的可以命名为 company_105343716.pub 和company_1054343716
+
+在~/.ssh 文件夹中创建 一个 config文件
+$ touch config
+$ vim config
+
+写入以下配置
+++++++++++++++++++++++++++++++++++++++++++++++++分割线
+
+#第一个账号 juliankeji 
+#company
+Host github.com #别名
+HostName github.com
+User git
+IdentityFile ~/.ssh/id_rsa #密钥
+
+#第二个账号 KingsleyTong 
+#own
+Host second.github.com #别名
+HostName github.com
+User git
+IdentityFile ~/.ssh/company_1054343716 #密钥
+
+
+++++++++++++++++++++++++++++++++++++++++++++++++分割线
+
+清空本地的 SSH 缓存，添加新的 SSH 密钥 到 SSH agent中
+$ ssh-add -D
+$ ssh-add id_rsa
+$ ssh-add company_1054343716
+
+若出现以下错误
++++++++++++++++++++++++++++++++++++++++++错误分割线
+
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+@         WARNING: UNPROTECTED PRIVATE KEY FILE!          @
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+Permissions 0644 for 'company_1054343716' are too open.
+It is required that your private key files are NOT accessible by others.
+This private key will be ignored.
+
+解决办法 去除其它人的读写权限
+$ chmod go-rw ~/.ssh/id_rsa
+
++++++++++++++++++++++++++++++++++++++++++错误分割线
+
+$ ssh-add -l 
+可以看到加入agent的以下密钥
+
+2048 SHA256:DFSDGFHGJDSFDGFDDSGFJSSGDFSDFSDHGDamZpqvB5c id_rsa (RSA)
+2048 SHA256:DFKDHDSFHFDKKDSSKDa56X8sEDFDwPHHVdAFfXDWse8 company_1054343716 (RSA)
+
+测试连接
+$ ssh -T git@github.com
+$ ssh -T git@second.github.com
+
+查看项目配置
+$ git config --list
+
+
+接下来使用的第一个账号地址还是git@github.com
+使用第二个账号地址就是git@second.github.com
+
+$ git remote add origin git@git.github.com:githubUserName/reposName.git
+$ git remote add origin git@second.github.com:githubUserName/reposName.git
+
+查看远程
+$ git remote -v
